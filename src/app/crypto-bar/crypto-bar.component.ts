@@ -5,6 +5,11 @@ import { select, Selection } from 'd3-selection';
 import { transition, Transition } from 'd3-transition';
 import { Crypto } from '../crypto';
 
+import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/takeWhile';
+
 import 'rxjs/add/operator/first';
 
 @Component({
@@ -30,49 +35,85 @@ export class CryptoBarComponent implements OnInit, OnDestroy {
     var width = d3.max(dataVal) * 10,
       barHeight = 20;
 
-    this.cryptoDataService.getCryptoData()
-      .first() //only gets fired once
-      .subscribe((data) => {
-        this.cryptoList = data;
-        console.log(this.cryptoList);
-        for (let i = 0; i < this.cryptoList.length; i++) {
-          dataVal.push(Number(this.cryptoList[i].price_usd));
+    IntervalObservable.create(10000)
+      .takeWhile(() => this.alive)
+      .subscribe(() =>
+        this.cryptoDataService.getCryptoData()
+          .subscribe(data => {
+            console.log(data);
+            this.cryptoList = data;
+            console.log(this.cryptoList);
+            for (let i = 0; i < this.cryptoList.length; i++) {
+              dataVal.push(Number(this.cryptoList[i].price_usd));
 
-        // scaleLinear returns a function with specified domain and range
-        var x = d3.scaleLinear()
-          .domain([0, d3.max(dataVal)])
-          .range([0, 1000]);
+              // scaleLinear returns a function with specified domain and range
+              var x = d3.scaleLinear()
+                .domain([0, d3.max(dataVal)])
+                .range([0, 1000]);
 
-        var chart = d3.select(".chart")
-          .attr("width", d3.max(dataVal))
-          .attr("height", barHeight * dataVal.length);
+              var chart = d3.select(".chart")
+                .attr("width", d3.max(dataVal))
+                .attr("height", barHeight * data.length);
 
-        var bar = chart.selectAll("g")
-          .data(dataVal)
-          .enter().append("g")
-          .attr("transform", function (d, i) { return "translate(0," + i * barHeight + ")"; });
+              var bar = chart.selectAll("g")
+                .data(dataVal)
+                .enter().append("g")
+                .attr("transform", function (d, i) { return "translate(0," + i * barHeight + ")"; });
 
-        bar.append("rect")
-          .attr("width", x)
-          .attr("height", barHeight - 1)
-          .style("fill", "steelblue");
+              bar.append("rect")
+                .attr("width", x)
+                .attr("height", barHeight - 1)
+                .style("fill", "steelblue");
 
-        bar.append("text")
-          .attr("x", function (d) { return x(d) - 3; })
-          .attr("y", barHeight / 2)
-          .attr("dy", ".35em")
-          .text(function (d) {
-            return data[i].id + " "+ d;
-          })
-          .style("fill", "white")
-          .style( "font", "10px sans-serif")
-          .style( "text-anchor", "end")
-        }
-      });
+              bar.append("text")
+                .attr("x", function (d) { return x(d) - 3; })
+                .attr("y", barHeight / 2)
+                .attr("dy", ".35em")
+                .text(function (d) {
+                  return data[i].id + " " + d;
+                })
+                .style("fill", "white")
+                .style("font", "10px sans-serif")
+                .style("text-anchor", "end")
+            }
+          }));
   }
 
   ngOnDestroy() {
-
+    this.alive = false;
   }
+
+  // createChart(index, data, barHeight) {
+  //   var dataVal = Number(data.price_usd);
+  //   // scaleLinear returns a function with specified domain and range
+  //   var x = d3.scaleLinear()
+  //     .domain([0, d3.max(dataVal)])
+  //     .range([0, 1000]);
+
+  //   var chart = d3.select(".chart")
+  //     .attr("width", d3.max(dataVal))
+  //     .attr("height", barHeight * data.length);
+
+  //   var bar = chart.selectAll("g")
+  //     .data(dataVal)
+  //     .enter().append("g")
+  //     .attr("transform", function (d, i) { return "translate(0," + i * barHeight + ")"; });
+
+  //   bar.append("rect")
+  //     .attr("width", x)
+  //     .attr("height", barHeight - 1)
+  //     .style("fill", "steelblue");
+
+  //   bar.append("text")
+  //     .attr("x", function (d) { return x(d) - 3; })
+  //     .attr("y", barHeight / 2)
+  //     .attr("dy", ".35em")
+  //     .text(function (d) {
+  //       return data[index].id + " " + d;
+  //     })
+  //     .style("fill", "white")
+  //     .style("font", "10px sans-serif")
+  //     .style("text-anchor", "end")
+  // }
 
 }

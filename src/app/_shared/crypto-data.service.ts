@@ -8,11 +8,10 @@ import { Crypto } from '../crypto';
 @Injectable()
 export class CryptoDataService {
   private url = 'https://api.coinmarketcap.com/v1/ticker/?limit=10';
-
   constructor(private http: Http) { }
 
   getCryptoData(): Observable<any> {
     return this.http.get(this.url)
-      .map((res: Response) => res.json());
+      .map((res: Response) =>  res.json() );
   }
 }
