@@ -1,0 +1,79 @@
+<div class="container" *ngIf="data">
+  <div class="display-4">Aisec Form</div>
+  <form>
+
+    <div class="form-group row">
+      <div class="col-md-12">
+        <label for="name"> Title</label>
+        <input *ngIf="!editable" type="text" name="name" class="form-control" id="name" [(ngModel)]="data.title" disabled/>
+        <input *ngIf="editable" type="text" name="name" class="form-control" id="name" [(ngModel)]="data.title" required/>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-md-4">
+        <label for="name"> Application Close Date</label>
+        <input *ngIf="!editable" type="text" name="closeDate" class="form-control" [(ngModel)]="data.applications_close_date" disabled/>
+        <input *ngIf="editable" type="text" name="closeDate" class="form-control" id="closeDate" [(ngModel)]="data.applications_close_date"
+          required/>
+      </div>
+      <div class="col-md-4">
+        <label for="name"> Earliest Start Date</label>
+        <input *ngIf="!editable" type="text" name="startDate" class="form-control" [(ngModel)]="data.earliest_start_date" disabled/>
+        <input *ngIf="editable" type="text" name="startDate" class="form-control" id="startDate" [(ngModel)]="data.earliest_start_date"
+          required/>
+      </div>
+      <div class="col-md-4">
+        <label for="name"> Latest End Date</label>
+        <input *ngIf="!editable" type="text" name="endDate" class="form-control" [(ngModel)]="data.latest_end_date" disabled/>
+        <input *ngIf="editable" type="text" name="endDate" class="form-control" id="endDate" [(ngModel)]="data.latest_end_date" required/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="name">Description</label>
+      <input *ngIf="!editable" type="text" name="description" class="form-control" [(ngModel)]="data.description" disabled/>
+      <input *ngIf="editable" type="text" name="description" class="form-control" id="description" [(ngModel)]="data.description"
+        required/>
+    </div>
+
+    <div class="form-group" *ngIf="data">
+      <label for="power">Backgrounds</label>
+      <span *ngIf="!editable">
+          <ul *ngFor="let item of data.backgrounds">
+            <li class="form-control">{{item.name}}</li>
+          </ul>
+      </span>
+      <ss-multiselect-dropdown *ngIf="editable" name="skillsDropdown" [options]="backgrounds" [(ngModel)]="backgroundsModel" (ngModelChange)="onChange($event)"></ss-multiselect-dropdown>
+    </div>
+
+    <div class="form-group" *ngIf="data">
+      <label for="skills">Skills</label>
+      <span *ngIf="!editable">
+        <ul *ngFor="let item of data.skills">
+          <li class="form-control">{{item.name}}</li>
+        </ul>
+      </span>
+      <ss-multiselect-dropdown *ngIf="editable" name="skillsDropdown" [options]="skills" [(ngModel)]="skillsModel" (ngModelChange)="onChange($event)"></ss-multiselect-dropdown>
+    </div>
+
+    <div class="form-group">
+      <label for="name"> Selection Process</label>
+      <input *ngIf="!editable" type="text" name="selProcess" class="form-control" [(ngModel)]="data.role_info.selection_process"
+        disabled/>
+      <input *ngIf="editable" type="text" name="selProcess" class="form-control" id="selProcess" [(ngModel)]="data.role_info.selection_process"
+        required/>
+    </div>
+
+    <div class="form-group">
+      <label for="name"> Salary</label>
+      <input *ngIf="!editable" type="number" name="salary" class="form-control" id="salary" [(ngModel)]="data.specifics_info.salary"
+        disabled/>
+      <input *ngIf="editable" type="number" name="salary" class="form-control" id="salary" [(ngModel)]="data.specifics_info.salary"
+        required/>
+    </div>
+
+    <button type="button" class="btn btn-success" (click)="callPatchService()"> {{actionButton}}</button>
+
+  </form>
+</div>
